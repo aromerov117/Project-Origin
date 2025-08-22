@@ -3,78 +3,57 @@ using System;
 
 public partial class Player : CharacterBody3D
 {
-	// ----- Ajustes de movimiento -----
-	[Export] public float Speed = 6.0f;
-	[Export] public float SprintMultiplier = 1.6f;
-	[Export] public float JumpVelocity = 5.5f;
+	[Export] public float WalkSpeed { get; set; } = 5.0f;
+	[Export] public float RunSpeed { get; set; } = 10.0f;
+	[Export] public float JumpVelocity { get; set; } = 10.0f;
+	[Export] public float Gravity { get; set; } = 20.0f;
+	[Export] public float MouseSensitivity { get; set; } = 0.0025f;
 
-	// ----- Cámara / ratón -----
-	[Export] public NodePath PivotPath;     // arrastra el nodo Pivot aquí desde el editor
-	[Export] public float MouseSensitivity = 0.15f;
-
-	private Node3D _pivot;
-	private float _pitch = 0f;  // rotación vertical
-	private float _gravity = 9.8f; // puedes ajustar o leer de ProjectSettings
+	private Camera3D _camera;
+	private float _yaw = 0.0f;
+	private float _pitch = 0.0f;
 
 	public override void _Ready()
 	{
-		// Capturar el mouse para cámara tipo tercera persona
+		_camera = GetNode<Camera3D>("Camera3D");
 		Input.MouseMode = Input.MouseModeEnum.Captured;
-
-		if (PivotPath != null && !PivotPath.IsEmpty)
-			_pivot = GetNode<Node3D>(PivotPath);
-		else
-			_pivot = GetNode<Node3D>("Pivot"); // fallback si dejaste el nombre por defecto
 	}
 
-	public override void _UnhandledInput(InputEvent @event)
+	public override void _Input(InputEvent @event)
 	{
-		if (@event is InputEventMouseMotion motion && Input.MouseMode == Input.MouseModeEnum.Captured)
+		if (@event is InputEventMouseMotion motion)
 		{
-			// Girar horizontalmente al Player (yaw)
-			RotateY(Mathf.DegToRad(-motion.Relative.X * MouseSensitivity));
+			_yaw -= motion.Relative.X * MouseSensitivity;
+			_pitch -= motion.Relative.Y * MouseSensitivity;
+			_pitch = Mathf.Clamp(_pitch, -1.2f, 1.2f);
 
-			// Girar verticalmente el pivot (pitch)
-			_pitch = Mathf.Clamp(_pitch - motion.Relative.Y * MouseSensitivity, -80f, 80f);
-			_pivot.RotationDegrees = new Vector3(_pitch, _pivot.RotationDegrees.Y, _pivot.RotationDegrees.Z);
-		}
-
-		// Liberar/capturar el mouse con Escape
-		if (@event.IsActionPressed("ui_cancel"))
-		{
-			Input.MouseMode = Input.MouseMode == Input.MouseModeEnum.Captured
-				? Input.MouseModeEnum.Visible
-				: Input.MouseModeEnum.Captured;
+			Rotation = new Vector3(0, _yaw, 0);
+			_camera.Rotation = new Vector3(_pitch, 0, 0);
 		}
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-		Vector3 velocity = Velocity;
+		var velocity = Velocity;
 
 		// Gravedad
 		if (!IsOnFloor())
-			velocity.Y -= _gravity * (float)delta;
-
-		// Dirección en XZ basada en input
-		Vector3 direction = Vector3.Zero;
-
-		if (Input.IsActionPressed("move_forward")) direction -= Transform.Basis.Z;
-		if (Input.IsActionPressed("move_back"))    direction += Transform.Basis.Z;
-		if (Input.IsActionPressed("move_left"))    direction -= Transform.Basis.X;
-		if (Input.IsActionPressed("move_right"))   direction += Transform.Basis.X;
-
-		direction = direction.Normalized();
-
-		float currentSpeed = Speed * (Input.IsActionPressed("sprint") ? SprintMultiplier : 1f);
-
-		// Aplicar movimiento horizontal
-		velocity.X = direction.X * currentSpeed;
-		velocity.Z = direction.Z * currentSpeed;
-
-		// Salto
-		if (IsOnFloor() && Input.IsActionJustPressed("jump"))
+		{
+			velocity.Y -= Gravity * (float)delta;
+		}
+		else if (Input.IsActionJustPressed("jump"))
+		{
 			velocity.Y = JumpVelocity;
+		}
+
+		// Dirección
+		Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_back");
+		var direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
+
+		float speed = Input.IsActionPressed("run") ? RunSpeed : WalkSpeed;
+
+		velocity.X = direction.X * speed;
+		velocity.Z = direction.Z * speed;
 
 		Velocity = velocity;
 		MoveAndSlide();

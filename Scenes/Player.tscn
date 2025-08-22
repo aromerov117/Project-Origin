@@ -12,10 +12,5 @@ shape = SubResource("CapsuleShape3D_qbkls")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 
-[node name="Node3D" type="Node3D" parent="."]
-
-[node name="SpringArm3D" type="SpringArm3D" parent="Node3D"]
-spring_length = 5.0
-
-[node name="Camera3D" type="Camera3D" parent="Node3D/SpringArm3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0667815, 0.617824, 0.0244597)
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.535279, 0)
