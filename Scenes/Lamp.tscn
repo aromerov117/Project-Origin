@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://db38ju8xj5twm"]
+
+[ext_resource type="PackedScene" uid="uid://dpe3351jpi5q8" path="res://Assets/Sin_nombre.glb" id="1_7gns8"]
+[ext_resource type="Script" uid="uid://bgg0axgvbxjt4" path="res://Scenes/Lamp.cs" id="1_lsmgh"]
+
+[node name="Lamp" type="Node3D"]
+transform = Transform3D(0.269969, 0, 0, 0, 0.269969, 0, 0, 0, 0.269969, 0, 0, 0)
+script = ExtResource("1_lsmgh")
+
+[node name="Sin_nombre" parent="." instance=ExtResource("1_7gns8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0461582, 2.38419e-07, 0.764532)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(3.70413, 0, 0, 0, 3.70413, 0, 0, 0, 3.70413, 0, 0, -1.01866)
+light_energy = 11.959
+spot_range = 24.648
+spot_attenuation = 1.82
+spot_angle = 20.35

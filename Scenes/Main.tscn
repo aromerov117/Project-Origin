@@ -1,9 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://bamw25ngdnqef"]
+[gd_scene load_steps=6 format=3 uid="uid://bamw25ngdnqef"]
 
 [ext_resource type="Texture2D" uid="uid://dyqme28a54rjf" path="res://Assets/suelo.jpg" id="1_idj7w"]
 [ext_resource type="PackedScene" uid="uid://dh5thcuv50su2" path="res://Scenes/Player.tscn" id="1_r150o"]
-
-[sub_resource type="Environment" id="Environment_c1w88"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_r150o"]
 size = Vector3(50, 1, 50)
@@ -15,12 +13,6 @@ size = Vector3(50, 1, 50)
 albedo_texture = ExtResource("1_idj7w")
 
 [node name="Main" type="Node3D"]
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.102288, 1.32733, -4.76837e-07)
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_c1w88")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 
