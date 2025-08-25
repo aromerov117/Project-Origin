@@ -2,46 +2,29 @@ using Godot;
 
 public partial class LampRigid : RigidBody3D
 {
-	[Export] public Area3D PickupArea;
-	private bool playerInRange = false;
-
-	public override void _Ready()
-	{
-		if (PickupArea != null)
-		{
-			PickupArea.BodyEntered += _on_PickupArea_body_entered;
-			PickupArea.BodyExited += _on_PickupArea_body_exited;
-		}
-	}
-
-	private void _on_PickupArea_body_entered(Node3D body)
-	{
-		if (body.IsInGroup("player"))
-			playerInRange = true;
-	}
-
-	private void _on_PickupArea_body_exited(Node3D body)
-	{
-		if (body.IsInGroup("player"))
-			playerInRange = false;
-	}
-
 	public override void _PhysicsProcess(double delta)
 	{
-		if (playerInRange && Input.IsActionJustPressed("throw_lamp"))
+		// Siempre imprimimos para ver si el script corre
+		GD.Print("LampRigid _PhysicsProcess corriendo");
+
+		// Detectamos tecla pickup (R)
+		if (Input.IsActionJustPressed("pickup_lamp"))
 		{
-			// Buscar la linterna de mano en el grupo
+			GD.Print("pickup_lamp presionada sobre linterna física");
+
+			// Buscamos la linterna de mano
 			var lamps = GetTree().GetNodesInGroup("player_lamp");
+			GD.Print("Número de Lamp en grupo player_lamp: ", lamps.Count);
+
 			foreach (var node in lamps)
 			{
 				if (node is Lamp lamp)
 				{
-					lamp.PickUpFromRigid();
+					GD.Print("Encontré la linterna de mano, llamando PickUpFromRigid");
+					lamp.PickUpFromRigid(this);
 					break;
 				}
 			}
-
-			QueueFree(); // destruir la linterna física
 		}
 	}
 }

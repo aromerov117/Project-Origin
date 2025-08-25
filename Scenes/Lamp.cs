@@ -2,16 +2,19 @@ using Godot;
 
 public partial class Lamp : Node3D
 {
-	[Export] public SpotLight3D LampLight;       // luz de la linterna
-	[Export] public MeshInstance3D LampMesh;     // mesh visible
-	[Export] public PackedScene ThrowLampScene;  // linterna física (RigidBody3D)
-	[Export] public Node3D Hand;                 // nodo donde se pega la linterna (del jugador)
+	[Export] public SpotLight3D LampLight;
+	[Export] public MeshInstance3D LampMesh;
+	[Export] public PackedScene ThrowLampScene;
+	[Export] public Node3D Hand;
 
-	private bool isOn = false;     // estado de la luz
-	private bool isHeld = true;    // true si está en la mano
+	private bool isOn = false;
+	private bool isHeld = true;
 
 	public override void _Ready()
 	{
+		AddToGroup("player_lamp");
+		GD.Print("Lamp _Ready: Linterna agregada al grupo player_lamp");
+
 		if (LampLight == null)
 			LampLight = GetNodeOrNull<SpotLight3D>("SpotLight3D");
 		if (LampMesh == null)
@@ -25,11 +28,23 @@ public partial class Lamp : Node3D
 	{
 		// Encender/apagar linterna
 		if (Input.IsActionJustPressed("toggle_lamp") && isHeld)
+		{
+			GD.Print("Se presionó toggle_lamp");
 			ToggleLight();
+		}
 
 		// Tirar linterna
 		if (Input.IsActionJustPressed("throw_lamp") && isHeld)
+		{
+			GD.Print("Se presionó throw_lamp");
 			ThrowLamp();
+		}
+
+		// Debug para ver el estado
+		if (Input.IsActionJustPressed("pickup_lamp"))
+		{
+			GD.Print("Se presionó pickup_lamp en Lamp (estado isHeld=", isHeld, ")");
+		}
 	}
 
 	private void ToggleLight()
@@ -37,6 +52,7 @@ public partial class Lamp : Node3D
 		isOn = !isOn;
 		if (LampLight != null)
 			LampLight.Visible = isOn;
+		GD.Print("ToggleLight: isOn=", isOn);
 	}
 
 	private void ThrowLamp()
@@ -47,38 +63,33 @@ public partial class Lamp : Node3D
 			return;
 		}
 
-		// Instanciar linterna física
 		var lampInstance = (RigidBody3D)ThrowLampScene.Instantiate();
-
-		// Posición frente al jugador
 		lampInstance.GlobalTransform = Hand.GlobalTransform;
-		lampInstance.Translate(-Hand.GlobalTransform.Basis.Z * 2.0f); // 2 metros adelante
+		lampInstance.Translate(-Hand.GlobalTransform.Basis.Z * 2.0f);
 
-		// Copiar estado de la luz
 		var lampLightInInstance = lampInstance.GetNodeOrNull<SpotLight3D>("SpotLight3D");
 		if (lampLightInInstance != null)
 			lampLightInInstance.Visible = isOn;
 
-		// Agregar al mundo
 		GetTree().CurrentScene.AddChild(lampInstance);
-
-		// Aplicar impulso hacia adelante
 		lampInstance.ApplyCentralImpulse(-Hand.GlobalTransform.Basis.Z * 5.0f);
 
-		// Ocultar linterna de la mano
 		isHeld = false;
 		Visible = false;
 
-		GD.Print("Linterna lanzada hacia adelante.");
+		GD.Print("ThrowLamp: Linterna lanzada, isHeld=", isHeld);
 	}
 
-	// Cuando la linterna física se recoge, se llama esto para volver a la mano
-	public void PickUpFromRigid()
+	public void PickUpFromRigid(RigidBody3D rigid)
 	{
+		GD.Print("PickUpFromRigid: Iniciando recogida de linterna");
+		rigid.QueueFree();
+		GD.Print("PickUpFromRigid: Linterna física destruida");
+
 		isHeld = true;
 		Visible = true;
 		GlobalTransform = Hand.GlobalTransform;
 
-		GD.Print("Linterna recogida y de vuelta en la mano.");
+		GD.Print("PickUpFromRigid: Linterna de vuelta en la mano, isHeld=", isHeld);
 	}
 }
