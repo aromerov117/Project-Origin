@@ -1,18 +1,21 @@
-[gd_scene load_steps=3 format=3 uid="uid://db38ju8xj5twm"]
+[gd_scene load_steps=4 format=3 uid="uid://ddtebj8jg857h"]
 
-[ext_resource type="PackedScene" uid="uid://dpe3351jpi5q8" path="res://Assets/Sin_nombre.glb" id="1_7gns8"]
-[ext_resource type="Script" uid="uid://bgg0axgvbxjt4" path="res://Scenes/Lamp.cs" id="1_lsmgh"]
+[ext_resource type="ArrayMesh" uid="uid://cdtn68xhm3x24" path="res://Assets/Lamp.obj" id="1_3b5q5"]
+[ext_resource type="Script" uid="uid://eynp0f2q27ph" path="res://Scenes/Lamp.cs" id="1_5vngr"]
+[ext_resource type="PackedScene" uid="uid://cdqs6bvcpmifc" path="res://Scenes/Lamp Rigid.tscn" id="2_xtpkl"]
 
 [node name="Lamp" type="Node3D"]
-transform = Transform3D(0.269969, 0, 0, 0, 0.269969, 0, 0, 0, 0.269969, 0, 0, 0)
-script = ExtResource("1_lsmgh")
+script = ExtResource("1_5vngr")
+ThrowLampScene = ExtResource("2_xtpkl")
 
-[node name="Sin_nombre" parent="." instance=ExtResource("1_7gns8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0461582, 2.38419e-07, 0.764532)
+[node name="visual" type="Node3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="visual"]
+transform = Transform3D(0.256595, 0, 0, 0, 0.256595, 0, 0, 0, 0.256595, 0, 0, 0)
+mesh = ExtResource("1_3b5q5")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="."]
-transform = Transform3D(3.70413, 0, 0, 0, 3.70413, 0, 0, 0, 3.70413, 0, 0, -1.01866)
-light_energy = 11.959
-spot_range = 24.648
-spot_attenuation = 1.82
-spot_angle = 20.35
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.258221)
+light_energy = 11.521
+spot_range = 30.956
+spot_angle = 16.17

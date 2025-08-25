@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://cdqs6bvcpmifc"]
+
+[ext_resource type="Script" uid="uid://b7qmdh32ac5rs" path="res://Scenes/LampRigid.cs" id="1_4lmny"]
+[ext_resource type="ArrayMesh" uid="uid://cdtn68xhm3x24" path="res://Assets/Lamp.obj" id="1_ghpop"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_4lmny"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ghpop"]
+
+[node name="RigidBody3D" type="RigidBody3D"]
+script = ExtResource("1_4lmny")
+
+[node name="Lamp" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.271771, 0, 0, 0, 0.271771, 0, 0, 0, 0.271771, -0.00489593, 1.19209e-07, -0.00340909)
+mesh = ExtResource("1_ghpop")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.14817, 0, 0, 0, -0.00135608, 0.148826, 0, -0.287767, -0.000701332, 0, 0, 0)
+shape = SubResource("CylinderShape3D_4lmny")
+
+[node name="PickupArea" type="Area3D" parent="."]
+transform = Transform3D(1.64488, 0, 0, 0, 1.64488, 0, 0, 0, 1.64488, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupArea"]
+transform = Transform3D(4.70515, 0, 0, 0, 4.70515, 0, 0, 0, 4.70515, 0, 0, 0)
+shape = SubResource("SphereShape3D_ghpop")
+
+[connection signal="body_entered" from="PickupArea" to="." method="_on_pickup_area_body_entered"]

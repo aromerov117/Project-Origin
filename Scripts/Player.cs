@@ -10,13 +10,24 @@ public partial class Player : CharacterBody3D
 	[Export] public float MouseSensitivity { get; set; } = 0.0025f;
 
 	private Camera3D _camera;
+	private Node3D _hand;       // Nodo vacío donde se coloca la lámpara
+	private Node3D _heldLamp;   // Referencia a la lámpara en mano
+
 	private float _yaw = 0.0f;
 	private float _pitch = 0.0f;
 
 	public override void _Ready()
 	{
 		_camera = GetNode<Camera3D>("Camera3D");
+		_hand = _camera.GetNode<Node3D>("Hand"); // debe existir un Node3D vacío "Hand" dentro de la cámara
 		Input.MouseMode = Input.MouseModeEnum.Captured;
+
+		// La lámpara siempre empieza en la mano
+		if (_hand.GetChildCount() > 0)
+		{
+			_heldLamp = _hand.GetChild<Node3D>(0);
+			GD.Print($"Lámpara inicial en la mano: {_heldLamp.Name}");
+		}
 	}
 
 	public override void _Input(InputEvent @event)
@@ -36,20 +47,15 @@ public partial class Player : CharacterBody3D
 	{
 		var velocity = Velocity;
 
-		// Gravedad
+		// Gravedad y salto
 		if (!IsOnFloor())
-		{
 			velocity.Y -= Gravity * (float)delta;
-		}
 		else if (Input.IsActionJustPressed("jump"))
-		{
 			velocity.Y = JumpVelocity;
-		}
 
-		// Dirección
+		// Movimiento
 		Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_back");
 		var direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
-
 		float speed = Input.IsActionPressed("run") ? RunSpeed : WalkSpeed;
 
 		velocity.X = direction.X * speed;
