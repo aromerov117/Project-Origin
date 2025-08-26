@@ -22,7 +22,7 @@ shape = SubResource("CylinderShape3D_4lmny")
 transform = Transform3D(1.96955, 0, 0, 0, 1.96955, 0, 0, 0, 1.96955, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PickupArea"]
-transform = Transform3D(7.40408, 0, 0, 0, 7.40408, 0, 0, 0, 7.40408, 0, 0, 0)
+transform = Transform3D(5.43109, 0, 0, 0, 5.43109, 0, 0, 0, 5.43109, 0, 0, 0)
 shape = SubResource("SphereShape3D_ghpop")
 
 [connection signal="body_entered" from="PickupArea" to="." method="_on_pickup_area_body_entered"]
